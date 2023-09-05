@@ -5316,6 +5316,7 @@ LGraphNode.prototype.executeAction = function(action)
         this.last_mouse_position = [0, 0];
         this.visible_area = this.ds.visible_area;
         this.visible_links = [];
+        this.fill_connected = true;
 
 		this.viewport = options.viewport || null; //to constraint render area to a portion of the canvas
 
@@ -8608,9 +8609,20 @@ LGraphNode.prototype.executeAction = function(action)
 						if(low_quality)
 	                        ctx.rect(pos[0] - 4, pos[1] - 4, 8, 8 ); //faster
 						else
+                            // Simple arc
 	                        ctx.arc(pos[0], pos[1], 4, 0, Math.PI * 2);
+                            if (this.fill_connected && slot.link) {
+                                ctx.fill();
+                                ctx.beginPath()
+                                ctx.arc(pos[0], pos[1], 2, 0, Math.PI * 2);
+                                ctx.fillStyle = "black";
+                                ctx.globalAlpha = 0.7;
+                                doStroke = false;
                     }
+                    }
+
                     ctx.fill();
+                    ctx.globalAlpha = editor_alpha;
 
                     //render name
                     if (render_text) {
@@ -8708,6 +8720,14 @@ LGraphNode.prototype.executeAction = function(action)
 	                        ctx.rect(pos[0] - 4, pos[1] - 4, 8, 8 );
 						else
 	                        ctx.arc(pos[0], pos[1], 4, 0, Math.PI * 2);
+                            if (this.fill_connected && slot.links) {
+                                ctx.fill();
+                                ctx.fillStyle = "black";
+                                ctx.beginPath()
+                                ctx.arc(pos[0], pos[1], 2, 0, Math.PI * 2);
+                                ctx.globalAlpha = 0.7;
+                                doStroke = false;
+                            }
                     }
 
                     //trigger
@@ -8718,6 +8738,7 @@ LGraphNode.prototype.executeAction = function(action)
                     ctx.fill();
 					if(!low_quality && doStroke)
 	                    ctx.stroke();
+                    ctx.globalAlpha = editor_alpha;
 
                     //render output name
                     if (render_text) {
